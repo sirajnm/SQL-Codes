@@ -1,0 +1,19 @@
+EXEC sp_addlinkedserver @server='LinkedSSAS', @srvproduct='', @provider='MSOLAP', @datasrc='MyServer'
+EXEC sp_addlinkedsrvlogin @rmtsrvname='LinkedSSAS', @useself='false', @locallogin=NULL, @rmtuser='MyDomain\Me', @rmtpassword='4#5$ZaYb'
+
+SELECT * FROM OPENQUERY( LinkedSSAS, 'SELECT [CATALOG_NAME] FROM $SYSTEM.DBSCHEMA_CATALOGS' )
+
+SELECT * FROM OPENQUERY( LinkedSSAS, 'SELECT [CUBE_NAME] FROM $SYSTEM.MDSCHEMA_CUBES' )
+
+Select * from OpenQuery (LinkedSSAS, 'Select Non Empty [Measures].[Total Sold] on Columns, 
+Non Empty 
+   (NonEmpty  [DimProductCategory].[ProductName].MEMBERS, 
+NonEmpty [ItemView_New].[OriginalStyleNo].MEMBERS)  
+  on Rows 
+FROM [MIS] where ([DimProductCategory].[Gender].[Women] , 
+[DimBrands].[Brand Division].[1.Major GB] ,
+[YearInformation_New].[ItemYear].&[2021]:[YearInformation_New].[ItemYear].&[2024],
+[DimDate].[Year].&[2021]:[DimDate].[Year].&[2024],
+[DimLocations].[CountryCode].[ARE],
+[DimLocations].[LocationType].[Retail Store]
+)')
